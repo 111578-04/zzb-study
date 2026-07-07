@@ -915,11 +915,25 @@ async function checkSession() {
       currentUser = { id: session.user.id, email: session.user.email };
       syncStatus = 'connected';
       await pullFromCloud();
+      startAutoSync(); // 启动定时同步
     }
   } catch (e) {
     console.warn('会话检查失败:', e.message);
   }
   updateCloudUI();
+}
+
+// ── 定时自动同步 ──
+let autoSyncTimer = null;
+function startAutoSync() {
+  stopAutoSync();
+  autoSyncTimer = setInterval(async () => {
+    if (!supabaseClient || !currentUser) return;
+    await pullFromCloud();
+  }, 30000); // 每 30 秒自动拉取
+}
+function stopAutoSync() {
+  if (autoSyncTimer) { clearInterval(autoSyncTimer); autoSyncTimer = null; }
 }
 
 // ── 登录 ──
@@ -1023,6 +1037,7 @@ async function handleRegister() {
 
 // ── 退出 ──
 async function handleLogout() {
+  stopAutoSync();
   if (!supabaseClient) return;
   try {
     await supabaseClient.auth.signOut();
@@ -1070,14 +1085,17 @@ async function pullFromCloud() {
     for (const cl of cloudLogs) {
       localMap.set(cl.id, cl);
     }
+    const oldLength = logs.length;
     logs = Array.from(localMap.values()).sort((a, b) => b.createdAt - a.createdAt);
     saveToStorageSilent();
 
     setSyncStatus('connected');
     renderAll();
+    return { success: true, oldCount: oldLength, newCount: logs.length };
   } catch (e) {
     console.warn('云端拉取失败:', e.message);
     setSyncStatus('offline');
+    return { success: false, error: e.message };
   }
 }
 
@@ -1173,8 +1191,17 @@ function handleCloudClick() {
     return;
   }
   // 已登录 → 手动同步
-  pullFromCloud().then(() => {
-    if (syncStatus === 'connected') showToast('🔄 同步完成');
+  pullFromCloud().then((result) => {
+    if (result && result.success) {
+      const added = result.newCount - result.oldCount;
+      if (added > 0) {
+        showToast(`🔄 同步完成，新增 ${added} 条记录`);
+      } else if (result.oldCount === result.newCount) {
+        showToast('✅ 数据已是最新');
+      }
+    } else {
+      showToast('⚠️ 同步失败，请检查网络');
+    }
   });
 }
 
