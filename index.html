@@ -597,6 +597,8 @@ function addLog() {
 
   renderAll();
   showToast('✅ 记录已保存');
+  // 同步推送到云端
+  pushToCloud(log);
 }
 
 // ============================================================
@@ -615,12 +617,15 @@ function requestDelete(id) {
 
 function confirmDelete() {
   if (!deleteTargetId) return;
-  logs = logs.filter(l => l.id !== deleteTargetId);
+  const targetId = deleteTargetId;
+  logs = logs.filter(l => l.id !== targetId);
   saveToStorage();
   deleteTargetId = null;
   closeModal();
   renderAll();
   showToast('🗑️ 记录已删除');
+  // 同步删除云端
+  deleteFromCloud(targetId);
 }
 
 function closeModal() {
@@ -1109,12 +1114,6 @@ function saveToStorageSilent() {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(logs));
 }
 
-// ── 修改 saveToStorage，同步推云端 ──
-const originalSaveToStorage = saveToStorage;
-saveToStorage = function() {
-  originalSaveToStorage();
-};
-
 // ── 同步状态 UI ──
 function setSyncStatus(status) {
   syncStatus = status;
@@ -1297,26 +1296,6 @@ function hideModal(modalId, boxId) {
   box.classList.add('scale-95');
   box.classList.remove('scale-100');
 }
-
-// ── 增强 addLog：推送到云端 ──
-const _originalAddLog = addLog;
-addLog = function() {
-  _originalAddLog();
-  // 推送最新一条到云端
-  if (supabaseClient && currentUser && logs.length > 0) {
-    pushToCloud(logs[0]);
-  }
-};
-
-// ── 增强 confirmDelete：从云端删除 ──
-const _originalConfirmDelete = confirmDelete;
-confirmDelete = async function() {
-  const targetId = deleteTargetId;
-  _originalConfirmDelete();
-  if (targetId) {
-    await deleteFromCloud(targetId);
-  }
-};
 
 // ── 点击弹窗背景关闭 ──
 document.addEventListener('click', (e) => {
