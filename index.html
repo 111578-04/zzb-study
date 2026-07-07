@@ -1,0 +1,1575 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>专转本高效学习记录册 · 2027 江苏计算机大类</title>
+
+<!-- PWA Meta -->
+<meta name="application-name" content="专转本学习记录册">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="专转本学习册">
+<meta name="description" content="2027 江苏专转本计算机大类高效学习复盘工具">
+<meta name="theme-color" content="#f8fafc">
+<meta name="mobile-web-app-capable" content="yes">
+
+<!-- Apple Touch Icon (inline SVG → base64) -->
+<link rel="apple-touch-icon" sizes="180x180"
+  href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180' viewBox='0 0 180 180'%3E%3Crect width='180' height='180' rx='40' fill='%23334155'/%3E%3Ctext x='90' y='115' text-anchor='middle' font-size='90' font-family='sans-serif' fill='white'%3E📖%3C/text%3E%3C/svg%3E">
+
+<!-- Manifest (dynamically injected) -->
+<script>
+(function() {
+  const manifest = {
+    name: '专转本高效学习记录册',
+    short_name: '专转本学习册',
+    description: '2027 江苏专转本计算机大类高效复盘工具',
+    start_url: location.href,
+    display: 'standalone',
+    orientation: 'any',
+    background_color: '#f8fafc',
+    theme_color: '#f8fafc',
+    icons: [{
+      src: 'data:image/svg+xml,' + encodeURIComponent(
+        '<svg xmlns="http://www.w3.org/2000/svg" width="192" height="192" viewBox="0 0 192 192">' +
+        '<rect width="192" height="192" rx="42" fill="#334155"/>' +
+        '<text x="96" y="126" text-anchor="middle" font-size="100" font-family="sans-serif" fill="white">📖</text>' +
+        '</svg>'
+      ),
+      sizes: '192x192',
+      type: 'image/svg+xml',
+      purpose: 'any maskable'
+    }, {
+      src: 'data:image/svg+xml,' + encodeURIComponent(
+        '<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">' +
+        '<rect width="512" height="512" rx="112" fill="#334155"/>' +
+        '<text x="256" y="336" text-anchor="middle" font-size="270" font-family="sans-serif" fill="white">📖</text>' +
+        '</svg>'
+      ),
+      sizes: '512x512',
+      type: 'image/svg+xml',
+      purpose: 'any maskable'
+    }]
+  };
+  const blob = new Blob([JSON.stringify(manifest)], { type: 'application/manifest+json' });
+  const link = document.createElement('link');
+  link.rel = 'manifest';
+  link.href = URL.createObjectURL(blob);
+  document.head.appendChild(link);
+})();
+</script>
+
+<script src="https://cdn.tailwindcss.com"></script>
+<!-- Supabase SDK -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&family=Noto+Sans+SC:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        fontFamily: {
+          sans: ['Inter', 'Noto Sans SC', 'system-ui', '-apple-system', 'sans-serif'],
+        },
+      }
+    }
+  }
+</script>
+<style>
+  *, *::before, *::after {
+    box-sizing: border-box;
+  }
+  body {
+    font-family: 'Inter', 'Noto Sans SC', system-ui, -apple-system, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  /* 自定义滚动条 */
+  ::-webkit-scrollbar { width: 5px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+  ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+  /* 输入框动效 */
+  .input-focus-ring {
+    transition: all 0.3s ease;
+  }
+  .input-focus-ring:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(51, 65, 85, 0.15), 0 4px 14px rgba(0,0,0,0.04);
+    border-color: #475569;
+  }
+
+  /* 卡片悬浮 */
+  .log-card {
+    transition: all 0.25s ease;
+  }
+  .log-card:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+  }
+
+  /* 按钮涟漪 */
+  .btn-ripple {
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+  }
+  .btn-ripple:active {
+    transform: scale(0.97);
+  }
+
+  /* 淡入动画 */
+  @keyframes fadeSlideIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .animate-in {
+    animation: fadeSlideIn 0.35s ease forwards;
+  }
+
+  /* Toast */
+  @keyframes toastIn {
+    from { opacity: 0; transform: translateY(-12px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes toastOut {
+    from { opacity: 1; transform: translateY(0); }
+    to   { opacity: 0; transform: translateY(-12px); }
+  }
+  .toast-enter { animation: toastIn 0.3s ease forwards; }
+  .toast-exit  { animation: toastOut 0.3s ease forwards; }
+
+  /* 标签页切换指示器 */
+  .tab-indicator {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* 空状态 */
+  .empty-state svg { opacity: 0.25; }
+
+  /* PWA 安装提示 */
+  @keyframes slideUp {
+    from { transform: translate(-50%, 100px); opacity: 0; }
+    to   { transform: translate(-50%, 0); opacity: 1; }
+  }
+  .pwa-banner-enter {
+    animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+  @keyframes pwaPulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(51, 65, 85, 0.3); }
+    50%      { box-shadow: 0 0 0 8px rgba(51, 65, 85, 0); }
+  }
+  .pwa-pulse { animation: pwaPulse 2s infinite; }
+
+  /* iOS Safari 安全区域适配 */
+  @supports (padding-bottom: env(safe-area-inset-bottom)) {
+    .safe-bottom { padding-bottom: env(safe-area-inset-bottom); }
+  }
+
+  /* 云端同步相关 */
+  .sync-dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    display: inline-block;
+  }
+  .sync-dot.connected  { background: #10b981; box-shadow: 0 0 0 3px rgba(16,185,129,0.2); }
+  .sync-dot.offline   { background: #f59e0b; box-shadow: 0 0 0 3px rgba(245,158,11,0.2); }
+  .sync-dot.syncing   { background: #3b82f6; animation: syncPulse 0.8s infinite; }
+  @keyframes syncPulse {
+    0%, 100% { box-shadow: 0 0 0 3px rgba(59,130,246,0.2); }
+    50%      { box-shadow: 0 0 0 8px rgba(59,130,246,0); }
+  }
+
+  /* Auth 输入框 */
+  .auth-input {
+    transition: all 0.3s ease;
+  }
+  .auth-input:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(51, 65, 85, 0.12);
+    border-color: #64748b;
+  }
+
+  /* Tab 切换 (登录/注册) */
+  .auth-tab {
+    position: relative;
+    transition: all 0.25s ease;
+  }
+  .auth-tab.active {
+    color: #1e293b;
+  }
+  .auth-tab.active::after {
+    content: '';
+    position: absolute;
+    bottom: -2px; left: 0; right: 0;
+    height: 2px;
+    background: #334155;
+    border-radius: 2px;
+  }
+</style>
+</head>
+<body class="bg-slate-50 min-h-screen safe-bottom">
+
+<!-- ====== Toast 通知容器 ====== -->
+<div id="toastContainer" class="fixed top-6 left-1/2 -translate-x-1/2 z-50 flex flex-col items-center gap-2 pointer-events-none"></div>
+
+<!-- ====== PWA 安装提示 ====== -->
+<div id="pwaInstallBanner" class="fixed bottom-6 left-1/2 z-40 w-[calc(100%-2rem)] max-w-md hidden">
+  <div class="bg-slate-800 text-white rounded-2xl shadow-2xl px-5 py-4 flex items-center gap-4 pwa-pulse safe-bottom">
+    <span class="text-2xl">📖</span>
+    <div class="flex-1 min-w-0">
+      <p class="text-sm font-semibold leading-tight">添加到主屏幕</p>
+      <p class="text-xs text-slate-400 mt-0.5">安装为独立 App，支持离线使用</p>
+    </div>
+    <button id="pwaInstallBtn"
+      class="btn-ripple flex-shrink-0 px-4 py-1.5 rounded-lg text-xs font-semibold bg-white text-slate-800 hover:bg-slate-100 transition-all duration-300">
+      安装
+    </button>
+    <button onclick="dismissPWABanner()" class="flex-shrink-0 p-1 text-slate-500 hover:text-white transition-colors duration-300">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+    </button>
+  </div>
+</div>
+
+<!-- ====== iOS 安装指引 ====== -->
+<div id="iosInstallTip" class="fixed bottom-6 left-1/2 z-40 w-[calc(100%-2rem)] max-w-md hidden">
+  <div class="bg-white rounded-2xl shadow-xl border border-slate-200 px-5 py-4 safe-bottom">
+    <div class="flex items-start gap-3">
+      <span class="text-2xl mt-0.5">📖</span>
+      <div class="flex-1 min-w-0">
+        <p class="text-sm font-semibold text-slate-800">添加到主屏幕</p>
+        <p class="text-xs text-slate-500 mt-0.5 leading-relaxed">
+          点击 Safari 底部 <span class="inline-flex items-center gap-0.5 px-1.5 py-0.5 bg-slate-100 rounded-md text-slate-600 font-medium">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5 5-5M12 15V3"/></svg>
+          </span> 共享按钮 → 「添加到主屏幕」
+        </p>
+      </div>
+      <button onclick="dismissIOSTip()" class="flex-shrink-0 p-1 text-slate-400 hover:text-slate-600 transition-colors">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ====== 主容器 ====== -->
+<div class="max-w-3xl mx-auto px-4 sm:px-6 py-8 pb-24">
+
+  <!-- ── 头部 ── -->
+  <header class="mb-10">
+    <div class="flex items-center justify-between flex-wrap gap-3">
+      <div>
+        <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-slate-800">
+          专转本学习记录册
+        </h1>
+        <p class="text-sm text-slate-400 mt-1.5 font-medium">
+          2027 江苏 · 计算机大类 · 每日高效复盘
+        </p>
+      </div>
+      <div class="flex gap-2">
+        <button onclick="exportData()" title="导出 JSON 备份"
+          class="btn-ripple flex items-center gap-1.5 px-3 py-2 text-xs font-medium rounded-lg border border-slate-200 bg-white text-slate-500 hover:text-slate-700 hover:border-slate-300 transition-all duration-300">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5 5-5M12 15V3"/></svg>
+          导出
+        </button>
+        <button onclick="triggerImport()" title="导入 JSON 备份"
+          class="btn-ripple flex items-center gap-1.5 px-3 py-2 text-xs font-medium rounded-lg border border-slate-200 bg-white text-slate-500 hover:text-slate-700 hover:border-slate-300 transition-all duration-300">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5-5 5 5M12 15V3"/></svg>
+          导入
+        </button>
+        <!-- 云端同步按钮 -->
+        <button id="cloudBtn" onclick="handleCloudClick()" title="云端同步"
+          class="btn-ripple flex items-center gap-1.5 px-3 py-2 text-xs font-medium rounded-lg border border-slate-200 bg-white text-slate-500 hover:text-slate-700 hover:border-slate-300 transition-all duration-300">
+          <span id="syncDot" class="sync-dot offline"></span>
+          <span id="cloudLabel">未配置</span>
+        </button>
+        <input type="file" id="importFile" accept=".json" onchange="handleImport(event)" class="hidden">
+      </div>
+    </div>
+  </header>
+
+  <!-- ── 快捷输入区 ── -->
+  <section class="mb-10">
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-5 sm:p-6">
+      <div class="flex flex-col gap-3">
+        <textarea id="logInput" rows="2" placeholder="记录今天学了什么？遇到什么难点？收获了什么？…"
+          class="input-focus-ring w-full resize-none rounded-xl border border-slate-200 bg-slate-50/60 px-4 py-3 text-sm text-slate-700 placeholder:text-slate-350 placeholder:font-light font-medium leading-relaxed"
+          autofocus></textarea>
+        <div class="flex items-center justify-between gap-3 flex-wrap">
+          <div class="flex gap-2">
+            <button id="btnComputer" onclick="setCategory('computer')"
+              class="category-btn btn-ripple flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold border-2 transition-all duration-300
+                     bg-zinc-800 text-white border-zinc-800 shadow-sm shadow-zinc-800/20">
+              💻 计算机
+            </button>
+            <button id="btnMath" onclick="setCategory('math')"
+              class="category-btn btn-ripple flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold border-2 transition-all duration-300
+                     bg-white text-slate-500 border-slate-200 hover:border-slate-300">
+              📐 高等数学
+            </button>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="text-xs text-slate-350 hidden sm:inline">Ctrl + Enter</span>
+            <button onclick="addLog()"
+              class="btn-ripple flex items-center gap-1.5 px-5 py-2 rounded-xl text-sm font-semibold text-white
+                     bg-slate-800 hover:bg-slate-750 active:bg-slate-900 transition-all duration-300 shadow-sm shadow-slate-800/15">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M12 4v16m8-8H4"/></svg>
+              记录
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <p id="inputHint" class="text-xs text-slate-350 mt-2 ml-1 opacity-0 transition-opacity duration-300">请输入内容后再提交</p>
+  </section>
+
+  <!-- ── 统计卡片行 ── -->
+  <section class="mb-8 grid grid-cols-2 sm:grid-cols-4 gap-3">
+    <div class="bg-white rounded-xl border border-slate-200/80 px-4 py-3.5 shadow-sm">
+      <div class="text-xs text-slate-400 font-medium mb-1">总记录</div>
+      <div class="text-2xl font-bold text-slate-800" id="statTotal">0</div>
+    </div>
+    <div class="bg-white rounded-xl border border-slate-200/80 px-4 py-3.5 shadow-sm">
+      <div class="text-xs text-slate-400 font-medium mb-1">💻 计算机</div>
+      <div class="text-2xl font-bold text-zinc-700" id="statComputer">0</div>
+    </div>
+    <div class="bg-white rounded-xl border border-slate-200/80 px-4 py-3.5 shadow-sm">
+      <div class="text-xs text-slate-400 font-medium mb-1">📐 数学</div>
+      <div class="text-2xl font-bold text-slate-600" id="statMath">0</div>
+    </div>
+    <div class="bg-white rounded-xl border border-slate-200/80 px-4 py-3.5 shadow-sm">
+      <div class="text-xs text-slate-400 font-medium mb-1">今日</div>
+      <div class="text-2xl font-bold text-slate-800" id="statToday">0</div>
+    </div>
+  </section>
+
+  <!-- ── 分类标签与筛选 ── -->
+  <section class="mb-6">
+    <div class="flex items-center gap-3 flex-wrap">
+      <h2 class="text-sm font-semibold text-slate-500 uppercase tracking-wider">记录列表</h2>
+      <div class="h-4 w-px bg-slate-200"></div>
+      <button onclick="setFilter('all')" id="filterAll"
+        class="filter-btn text-xs font-medium px-3 py-1 rounded-lg transition-all duration-300 bg-slate-800 text-white">全部</button>
+      <button onclick="setFilter('computer')" id="filterComputer"
+        class="filter-btn text-xs font-medium px-3 py-1 rounded-lg transition-all duration-300 bg-white text-slate-500 border border-slate-200 hover:border-slate-300">💻 计算机</button>
+      <button onclick="setFilter('math')" id="filterMath"
+        class="filter-btn text-xs font-medium px-3 py-1 rounded-lg transition-all duration-300 bg-white text-slate-500 border border-slate-200 hover:border-slate-300">📐 数学</button>
+      <span class="text-xs text-slate-350 ml-auto" id="filterCount">0 条记录</span>
+    </div>
+  </section>
+
+  <!-- ── 记录列表 ── -->
+  <section id="logList" class="flex flex-col gap-3">
+    <!-- 动态渲染 -->
+  </section>
+
+  <!-- ── 空状态 ── -->
+  <section id="emptyState" class="flex flex-col items-center justify-center py-20 text-center empty-state">
+    <svg class="w-20 h-20 mb-5" fill="none" stroke="currentColor" stroke-width="1" viewBox="0 0 24 24" class="text-slate-300">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 12.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 18.75a.75.75 0 110-1.5.75.75 0 010 1.5z"/>
+      <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 3h-15A1.5 1.5 0 003 4.5v15A1.5 1.5 0 004.5 21h15a1.5 1.5 0 001.5-1.5v-15A1.5 1.5 0 0019.5 3z"/>
+      <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 8.25H15a1.5 1.5 0 01-1.5-1.5v-1.5M16.5 8.25L12 12.75M16.5 8.25v.75"/>
+    </svg>
+    <p class="text-sm font-medium text-slate-300 mb-1">还没有学习记录</p>
+    <p class="text-xs text-slate-300">在上方输入框中写下你的第一条复盘吧 ✍️</p>
+  </section>
+
+  <!-- ── 底部留白 ── -->
+  <footer class="mt-16 text-center text-xs text-slate-300">
+    专转本高效学习记录册 · 数据仅保存在本地浏览器 · 记得定期导出备份
+  </footer>
+</div>
+
+<!-- ====== 确认删除弹窗 ====== -->
+<div id="confirmModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/20 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-300">
+  <div class="bg-white rounded-2xl shadow-xl border border-slate-200/80 p-6 max-w-sm w-full mx-4 transform scale-95 transition-transform duration-300" id="confirmBox">
+    <h3 class="text-base font-semibold text-slate-800 mb-2">确认删除</h3>
+    <p class="text-sm text-slate-500 mb-5">删除后无法恢复，确定要删除这条记录吗？</p>
+    <div class="flex gap-3 justify-end">
+      <button onclick="closeModal()" class="btn-ripple px-4 py-2 text-sm font-medium rounded-lg border border-slate-200 text-slate-500 hover:bg-slate-50 transition-all duration-300">取消</button>
+      <button id="confirmDeleteBtn" class="btn-ripple px-4 py-2 text-sm font-medium rounded-lg bg-red-500 text-white hover:bg-red-600 transition-all duration-300">删除</button>
+    </div>
+  </div>
+</div>
+
+<!-- ====== Supabase 配置弹窗 ====== -->
+<div id="supabaseConfigModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/20 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-300">
+  <div class="bg-white rounded-2xl shadow-xl border border-slate-200/80 p-6 max-w-lg w-full mx-4 max-h-[90vh] overflow-y-auto transform scale-95 transition-transform duration-300" id="configBox">
+    <h3 class="text-lg font-bold text-slate-800 mb-1">配置云端同步</h3>
+    <p class="text-xs text-slate-400 mb-5">使用 Supabase 免费数据库实现多设备同步</p>
+
+    <!-- 设置指南 -->
+    <details class="mb-5 group">
+      <summary class="text-xs font-semibold text-slate-500 cursor-pointer hover:text-slate-700 transition-colors select-none">
+        📘 如何免费创建 Supabase 项目？（点击展开）
+      </summary>
+      <div class="mt-3 pl-4 border-l-2 border-slate-200 text-xs text-slate-500 space-y-2 leading-relaxed">
+        <p>1. 访问 <a href="https://supabase.com" target="_blank" class="text-blue-500 underline">supabase.com</a> → 用 GitHub 账号登录（免费）</p>
+        <p>2. 点击 <b>「New project」</b> → 输入项目名（如 zzb-study）→ 设置数据库密码 → 选择 <b>ap-southeast-1</b>（新加坡，国内访问快）</p>
+        <p>3. 创建完成后 → 左侧菜单 <b>「SQL Editor」</b> → 粘贴以下 SQL → 点击 Run：</p>
+        <div class="bg-slate-800 text-slate-200 rounded-lg p-3 mt-1 overflow-x-auto text-[11px] leading-relaxed select-all" style="font-family: monospace;">
+-- 创建学习记录表<br>
+CREATE TABLE study_logs (<br>
+&nbsp;&nbsp;id UUID DEFAULT gen_random_uuid() PRIMARY KEY,<br>
+&nbsp;&nbsp;user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE NOT NULL,<br>
+&nbsp;&nbsp;category TEXT NOT NULL CHECK (category IN ('computer', 'math')),<br>
+&nbsp;&nbsp;content TEXT NOT NULL,<br>
+&nbsp;&nbsp;created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),<br>
+&nbsp;&nbsp;timestamp TEXT NOT NULL<br>
+);<br>
+<br>
+-- 开启行级安全<br>
+ALTER TABLE study_logs ENABLE ROW LEVEL SECURITY;<br>
+<br>
+-- 用户只能读写自己的记录<br>
+CREATE POLICY "Users manage own logs" ON study_logs<br>
+&nbsp;&nbsp;FOR ALL USING (auth.uid() = user_id)<br>
+&nbsp;&nbsp;WITH CHECK (auth.uid() = user_id);
+        </div>
+        <p>4. 左侧菜单 <b>「Project Settings」</b> → <b>「API」</b> → 复制 <b>Project URL</b> 和 <b>anon public key</b></p>
+        <p>5. 粘贴到下方输入框中 → 保存 → 即可开始同步 🎉</p>
+      </div>
+    </details>
+
+    <div class="space-y-3">
+      <div>
+        <label class="text-xs font-semibold text-slate-500 block mb-1">Supabase Project URL</label>
+        <input id="supabaseUrl" type="url" placeholder="https://xxxxxxxxxxxx.supabase.co"
+          class="auth-input w-full px-3 py-2 rounded-lg border border-slate-200 text-sm text-slate-700 bg-slate-50/60">
+      </div>
+      <div>
+        <label class="text-xs font-semibold text-slate-500 block mb-1">anon Public Key</label>
+        <input id="supabaseKey" type="text" placeholder="eyJhbGciOiJIUzI1NiIs..."
+          class="auth-input w-full px-3 py-2 rounded-lg border border-slate-200 text-sm text-slate-700 bg-slate-50/60 font-mono">
+      </div>
+    </div>
+    <div class="flex gap-3 justify-end mt-5">
+      <button onclick="closeConfigModal()" class="btn-ripple px-4 py-2 text-sm font-medium rounded-lg border border-slate-200 text-slate-500 hover:bg-slate-50 transition-all duration-300">取消</button>
+      <button onclick="saveSupabaseConfig()" class="btn-ripple px-4 py-2 text-sm font-semibold rounded-lg bg-slate-800 text-white hover:bg-slate-700 transition-all duration-300">保存并连接</button>
+    </div>
+  </div>
+</div>
+
+<!-- ====== 登录 / 注册弹窗 ====== -->
+<div id="authModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/20 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-300">
+  <div class="bg-white rounded-2xl shadow-xl border border-slate-200/80 p-6 max-w-sm w-full mx-4 transform scale-95 transition-transform duration-300" id="authBox">
+    <!-- Tab 切换 -->
+    <div class="flex gap-6 mb-6 border-b border-slate-100 pb-2">
+      <button id="authTabLogin" onclick="switchAuthTab('login')"
+        class="auth-tab active text-sm font-semibold text-slate-800 pb-2">登录</button>
+      <button id="authTabRegister" onclick="switchAuthTab('register')"
+        class="auth-tab text-sm font-semibold text-slate-350 pb-2">注册</button>
+    </div>
+
+    <!-- 登录表单 -->
+    <div id="loginForm" class="space-y-3">
+      <div>
+        <label class="text-xs font-semibold text-slate-500 block mb-1">邮箱</label>
+        <input id="loginEmail" type="email" placeholder="your@email.com"
+          class="auth-input w-full px-3 py-2.5 rounded-lg border border-slate-200 text-sm text-slate-700 bg-slate-50/60">
+      </div>
+      <div>
+        <label class="text-xs font-semibold text-slate-500 block mb-1">密码</label>
+        <input id="loginPassword" type="password" placeholder="••••••••"
+          class="auth-input w-full px-3 py-2.5 rounded-lg border border-slate-200 text-sm text-slate-700 bg-slate-50/60">
+      </div>
+      <p id="loginError" class="text-xs text-red-400 hidden"></p>
+      <button onclick="handleLogin()" id="loginBtn"
+        class="btn-ripple w-full py-2.5 rounded-xl text-sm font-semibold text-white bg-slate-800 hover:bg-slate-700 transition-all duration-300 mt-1">
+        登录
+      </button>
+    </div>
+
+    <!-- 注册表单 -->
+    <div id="registerForm" class="space-y-3 hidden">
+      <div>
+        <label class="text-xs font-semibold text-slate-500 block mb-1">邮箱</label>
+        <input id="registerEmail" type="email" placeholder="your@email.com"
+          class="auth-input w-full px-3 py-2.5 rounded-lg border border-slate-200 text-sm text-slate-700 bg-slate-50/60">
+      </div>
+      <div>
+        <label class="text-xs font-semibold text-slate-500 block mb-1">密码</label>
+        <input id="registerPassword" type="password" placeholder="至少 6 位"
+          class="auth-input w-full px-3 py-2.5 rounded-lg border border-slate-200 text-sm text-slate-700 bg-slate-50/60">
+      </div>
+      <p id="registerError" class="text-xs text-red-400 hidden"></p>
+      <button onclick="handleRegister()" id="registerBtn"
+        class="btn-ripple w-full py-2.5 rounded-xl text-sm font-semibold text-white bg-slate-800 hover:bg-slate-700 transition-all duration-300 mt-1">
+        注册并登录
+      </button>
+    </div>
+
+    <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between">
+      <p class="text-[11px] text-slate-350" id="authFooter">数据加密传输，仅你可见</p>
+      <button id="logoutBtn" onclick="handleLogout()"
+        class="hidden btn-ripple text-[11px] font-medium text-red-400 hover:text-red-600 transition-colors duration-300">
+        退出登录
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ============================================================
+//  全局状态
+// ============================================================
+const STORAGE_KEY = 'zzb_study_logs_v1';
+const CONFIG_KEY   = 'zzb_supabase_config';
+let logs = [];
+let currentCategory = 'computer';   // 'computer' | 'math'
+let currentFilter = 'all';          // 'all' | 'computer' | 'math'
+let deleteTargetId = null;
+
+// ── 云端同步状态 ──
+let supabaseClient = null;
+let currentUser = null;        // { id, email }
+let authMode = 'login';        // 'login' | 'register'
+let syncStatus = 'offline';    // 'offline' | 'connected' | 'syncing'
+
+// ============================================================
+//  初始化
+// ============================================================
+function init() {
+  loadFromStorage();
+  renderAll();
+  bindKeyboard();
+  initSupabase();        // 初始化云端同步
+  document.getElementById('logInput').focus();
+}
+
+// ============================================================
+//  LocalStorage 读写
+// ============================================================
+function loadFromStorage() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    logs = raw ? JSON.parse(raw) : [];
+    // 数据迁移 / 清洗
+    logs = logs.filter(l => l && typeof l.id === 'string');
+    logs.sort((a, b) => b.createdAt - a.createdAt);
+  } catch (e) {
+    logs = [];
+  }
+}
+
+function saveToStorage() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(logs));
+  notifySW(); // 通知 Service Worker 数据已更新
+}
+
+// ============================================================
+//  添加记录
+// ============================================================
+function addLog() {
+  const input = document.getElementById('logInput');
+  const text = input.value.trim();
+  const hint = document.getElementById('inputHint');
+
+  if (!text) {
+    hint.classList.remove('opacity-0');
+    input.focus();
+    setTimeout(() => hint.classList.add('opacity-0'), 2500);
+    return;
+  }
+
+  hint.classList.add('opacity-0');
+
+  const now = new Date();
+  const ts = formatTimestamp(now);
+
+  const log = {
+    id: generateId(),
+    category: currentCategory,
+    content: text,
+    createdAt: now.getTime(),
+    timestamp: ts,
+  };
+
+  logs.unshift(log);
+  saveToStorage();
+
+  // 清空输入框 & 聚焦
+  input.value = '';
+  input.style.height = 'auto';
+  input.focus();
+
+  renderAll();
+  showToast('✅ 记录已保存');
+}
+
+// ============================================================
+//  删除记录
+// ============================================================
+function requestDelete(id) {
+  deleteTargetId = id;
+  const modal = document.getElementById('confirmModal');
+  const box = document.getElementById('confirmBox');
+  modal.classList.remove('pointer-events-none');
+  modal.classList.add('opacity-100');
+  box.classList.remove('scale-95');
+  box.classList.add('scale-100');
+  document.getElementById('confirmDeleteBtn').focus();
+}
+
+function confirmDelete() {
+  if (!deleteTargetId) return;
+  logs = logs.filter(l => l.id !== deleteTargetId);
+  saveToStorage();
+  deleteTargetId = null;
+  closeModal();
+  renderAll();
+  showToast('🗑️ 记录已删除');
+}
+
+function closeModal() {
+  const modal = document.getElementById('confirmModal');
+  const box = document.getElementById('confirmBox');
+  modal.classList.remove('opacity-100');
+  modal.classList.add('pointer-events-none');
+  box.classList.add('scale-95');
+  box.classList.remove('scale-100');
+  deleteTargetId = null;
+}
+
+// 点击背景关闭
+document.addEventListener('click', (e) => {
+  const modal = document.getElementById('confirmModal');
+  if (e.target === modal) closeModal();
+});
+
+// ============================================================
+//  分类 & 筛选
+// ============================================================
+function setCategory(cat) {
+  currentCategory = cat;
+  const btnC = document.getElementById('btnComputer');
+  const btnM = document.getElementById('btnMath');
+
+  const activeClasses   = ['bg-zinc-800', 'text-white', 'border-zinc-800', 'shadow-sm', 'shadow-zinc-800/20'];
+  const inactiveClasses = ['bg-white', 'text-slate-500', 'border-slate-200', 'hover:border-slate-300'];
+  const baseClasses     = ['btn-ripple', 'flex', 'items-center', 'gap-1.5', 'px-3.5', 'py-1.5', 'rounded-full', 'text-xs', 'font-semibold', 'border-2', 'transition-all', 'duration-300'];
+
+  if (cat === 'computer') {
+    btnC.className = [...baseClasses, ...activeClasses].join(' ');
+    btnM.className = [...baseClasses, ...inactiveClasses].join(' ');
+  } else {
+    btnM.className = [...baseClasses, ...activeClasses].join(' ');
+    btnC.className = [...baseClasses, ...inactiveClasses].join(' ');
+  }
+
+  document.getElementById('logInput').focus();
+}
+
+function setFilter(f) {
+  currentFilter = f;
+  ['filterAll','filterComputer','filterMath'].forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    if ((f==='all'&&id==='filterAll')||(f==='computer'&&id==='filterComputer')||(f==='math'&&id==='filterMath')) {
+      el.className = 'filter-btn text-xs font-medium px-3 py-1 rounded-lg transition-all duration-300 bg-slate-800 text-white';
+    } else {
+      el.className = 'filter-btn text-xs font-medium px-3 py-1 rounded-lg transition-all duration-300 bg-white text-slate-500 border border-slate-200 hover:border-slate-300';
+    }
+  });
+  renderLogList();
+  updateStats();
+}
+
+// ============================================================
+//  渲染
+// ============================================================
+function renderAll() {
+  renderLogList();
+  updateStats();
+}
+
+function renderLogList() {
+  const container = document.getElementById('logList');
+  const emptyState = document.getElementById('emptyState');
+  const countEl = document.getElementById('filterCount');
+
+  let filtered = logs;
+  if (currentFilter !== 'all') {
+    filtered = logs.filter(l => l.category === currentFilter);
+  }
+
+  countEl.textContent = `${filtered.length} 条记录`;
+
+  if (filtered.length === 0) {
+    container.innerHTML = '';
+    emptyState.classList.remove('hidden');
+    return;
+  }
+
+  emptyState.classList.add('hidden');
+
+  const today = new Date();
+  const todayStr = `${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}`;
+
+  container.innerHTML = filtered.map((log, idx) => {
+    const isComputer = log.category === 'computer';
+    const catLabel = isComputer ? '💻 计算机' : '📐 数学';
+    const catColorClass = isComputer
+      ? 'bg-zinc-100 text-zinc-600'
+      : 'bg-slate-100 text-slate-600';
+    const borderColorClass = isComputer
+      ? 'border-l-zinc-400'
+      : 'border-l-slate-400';
+    const isToday = log.timestamp.startsWith(todayStr);
+    const delay = idx * 40;
+
+    return `
+      <div class="log-card animate-in bg-white rounded-xl border border-slate-200/80 border-l-[3px] ${borderColorClass} px-5 py-4 shadow-sm"
+           style="animation-delay: ${delay}ms">
+        <div class="flex items-start justify-between gap-3">
+          <div class="flex-1 min-w-0">
+            <p class="text-sm text-slate-700 leading-relaxed whitespace-pre-wrap break-words">${escapeHtml(log.content)}</p>
+            <div class="flex items-center gap-2 mt-3 flex-wrap">
+              <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-semibold ${catColorClass}">
+                ${catLabel}
+              </span>
+              <span class="text-[11px] text-slate-350 font-medium">
+                ${log.timestamp}
+              </span>
+              ${isToday ? '<span class="text-[11px] font-semibold text-emerald-500">今天</span>' : ''}
+            </div>
+          </div>
+          <button onclick="requestDelete('${log.id}')" title="删除"
+            class="btn-ripple flex-shrink-0 p-1.5 rounded-lg text-slate-300 hover:text-red-400 hover:bg-red-50 transition-all duration-300">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6M1 7h22M8 7V4a1 1 0 011-1h6a1 1 0 011 1v3"/>
+            </svg>
+          </button>
+        </div>
+      </div>`;
+  }).join('');
+
+  // 重新触发动画
+  requestAnimationFrame(() => {
+    container.querySelectorAll('.animate-in').forEach(el => {
+      el.classList.remove('animate-in');
+      void el.offsetWidth;
+      el.classList.add('animate-in');
+    });
+  });
+}
+
+function updateStats() {
+  const total = logs.length;
+  const computerCount = logs.filter(l => l.category === 'computer').length;
+  const mathCount = logs.filter(l => l.category === 'math').length;
+
+  const today = new Date();
+  const todayStr = `${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}`;
+  const todayCount = logs.filter(l => l.timestamp.startsWith(todayStr)).length;
+
+  document.getElementById('statTotal').textContent = total;
+  document.getElementById('statComputer').textContent = computerCount;
+  document.getElementById('statMath').textContent = mathCount;
+  document.getElementById('statToday').textContent = todayCount;
+}
+
+// ============================================================
+//  导出 / 导入
+// ============================================================
+function exportData() {
+  const data = {
+    version: 1,
+    exportedAt: formatTimestamp(new Date()),
+    totalRecords: logs.length,
+    logs: logs,
+  };
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `专转本学习记录_备份_${formatTimestamp(new Date()).replace(/[: ]/g, '-')}.json`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  showToast('📦 数据已导出');
+}
+
+function triggerImport() {
+  document.getElementById('importFile').click();
+}
+
+function handleImport(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    try {
+      const data = JSON.parse(e.target.result);
+      if (!data.logs || !Array.isArray(data.logs)) {
+        throw new Error('数据格式不正确');
+      }
+      // 合并还是替换？
+      if (logs.length > 0 && !confirm(`当前已有 ${logs.length} 条记录。\n\n点击"确定"将替换为备份数据（数据将被覆盖）\n点击"取消"将合并到已有记录中`)) {
+        // 合并模式：追加不重复的记录
+        const existingIds = new Set(logs.map(l => l.id));
+        const newLogs = data.logs.filter(l => l && !existingIds.has(l.id));
+        logs = [...newLogs, ...logs];
+      } else {
+        logs = data.logs.filter(l => l && typeof l.id === 'string');
+      }
+      logs.sort((a, b) => b.createdAt - a.createdAt);
+      saveToStorage();
+      renderAll();
+      showToast(`✅ 成功导入 ${data.logs.length} 条记录`);
+    } catch (err) {
+      showToast('❌ 文件格式错误，请检查后重试');
+    }
+  };
+  reader.readAsText(file);
+  event.target.value = '';
+}
+
+// ============================================================
+//  工具函数
+// ============================================================
+function formatTimestamp(date) {
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, '0');
+  const d = String(date.getDate()).padStart(2, '0');
+  const h = String(date.getHours()).padStart(2, '0');
+  const min = String(date.getMinutes()).padStart(2, '0');
+  return `${y}-${m}-${d} ${h}:${min}`;
+}
+
+function generateId() {
+  return 'log_' + Date.now().toString(36) + '_' + Math.random().toString(36).substring(2, 8);
+}
+
+function escapeHtml(str) {
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+function showToast(message) {
+  const container = document.getElementById('toastContainer');
+  const toast = document.createElement('div');
+  toast.className = 'toast-enter bg-slate-800 text-white text-xs font-medium px-4 py-2.5 rounded-xl shadow-lg pointer-events-auto';
+  toast.textContent = message;
+  container.appendChild(toast);
+
+  setTimeout(() => {
+    toast.classList.remove('toast-enter');
+    toast.classList.add('toast-exit');
+    toast.addEventListener('animationend', () => toast.remove());
+  }, 2000);
+}
+
+// ============================================================
+//  Supabase 云端同步
+// ============================================================
+
+// ── 初始化 Supabase 客户端 ──
+function initSupabase() {
+  const config = getSupabaseConfig();
+  if (!config) {
+    updateCloudUI();
+    return;
+  }
+  try {
+    const { createClient } = supabase; // CDN 全局
+    supabaseClient = createClient(config.url, config.key, {
+      auth: { persistSession: true, autoRefreshToken: true }
+    });
+    // 检查是否已有会话
+    checkSession();
+  } catch (e) {
+    console.warn('Supabase 初始化失败:', e.message);
+    supabaseClient = null;
+    updateCloudUI();
+  }
+}
+
+function getSupabaseConfig() {
+  try {
+    const raw = localStorage.getItem(CONFIG_KEY);
+    return raw ? JSON.parse(raw) : null;
+  } catch { return null; }
+}
+
+function saveSupabaseConfigToStorage(url, key) {
+  localStorage.setItem(CONFIG_KEY, JSON.stringify({ url, key }));
+}
+
+// ── 会话检查 ──
+async function checkSession() {
+  if (!supabaseClient) return;
+  try {
+    const { data: { session }, error } = await supabaseClient.auth.getSession();
+    if (error) throw error;
+    if (session && session.user) {
+      currentUser = { id: session.user.id, email: session.user.email };
+      syncStatus = 'connected';
+      await pullFromCloud();
+    }
+  } catch (e) {
+    console.warn('会话检查失败:', e.message);
+  }
+  updateCloudUI();
+}
+
+// ── 登录 ──
+async function handleLogin() {
+  const email = document.getElementById('loginEmail').value.trim();
+  const password = document.getElementById('loginPassword').value;
+  const errorEl = document.getElementById('loginError');
+  const btn = document.getElementById('loginBtn');
+
+  if (!email || !password) {
+    errorEl.textContent = '请填写邮箱和密码';
+    errorEl.classList.remove('hidden');
+    return;
+  }
+  errorEl.classList.add('hidden');
+  btn.textContent = '登录中…';
+  btn.disabled = true;
+
+  try {
+    const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+    if (error) throw error;
+    currentUser = { id: data.user.id, email: data.user.email };
+    syncStatus = 'connected';
+    updateCloudUI();
+    await pullFromCloud();
+    closeAuthModal();
+    showToast('✅ 登录成功，数据已同步');
+  } catch (e) {
+    const msg = e.message || '';
+    if (msg === 'Invalid login credentials') {
+      errorEl.textContent = '邮箱或密码错误';
+    } else if (msg.includes('Invalid path') || msg.includes('request URL')) {
+      errorEl.textContent = 'Supabase URL 配置有误，请重新设置';
+    } else if (msg.includes('fetch') || msg.includes('Network') || msg.includes('Failed to fetch')) {
+      errorEl.textContent = '网络连接失败，请检查 Supabase URL 是否正确';
+    } else {
+      errorEl.textContent = msg || '登录失败，请重试';
+    }
+    errorEl.classList.remove('hidden');
+  } finally {
+    btn.textContent = '登录';
+    btn.disabled = false;
+  }
+}
+
+// ── 注册 ──
+async function handleRegister() {
+  const email = document.getElementById('registerEmail').value.trim();
+  const password = document.getElementById('registerPassword').value;
+  const errorEl = document.getElementById('registerError');
+  const btn = document.getElementById('registerBtn');
+
+  if (!email || !password) {
+    errorEl.textContent = '请填写邮箱和密码';
+    errorEl.classList.remove('hidden');
+    return;
+  }
+  if (password.length < 6) {
+    errorEl.textContent = '密码至少需要 6 位';
+    errorEl.classList.remove('hidden');
+    return;
+  }
+  errorEl.classList.add('hidden');
+  btn.textContent = '注册中…';
+  btn.disabled = true;
+
+  try {
+    const { data, error } = await supabaseClient.auth.signUp({ email, password });
+    if (error) throw error;
+    if (data.user && data.session) {
+      // 邮箱已验证或未开启邮箱验证
+      currentUser = { id: data.user.id, email: data.user.email };
+      syncStatus = 'connected';
+      updateCloudUI();
+      await pullFromCloud();
+      closeAuthModal();
+      showToast('✅ 注册成功，数据已同步');
+    } else {
+      // 需要确认邮箱
+      closeAuthModal();
+      updateCloudUI();
+      showToast('📧 请查收确认邮件（检查垃圾箱）后重新登录');
+    }
+  } catch (e) {
+    const msg = e.message || '';
+    if (msg.includes('already registered') || msg.includes('already exists')) {
+      errorEl.textContent = '该邮箱已注册，请直接登录';
+    } else if (msg.includes('Invalid path') || msg.includes('request URL')) {
+      errorEl.textContent = 'Supabase URL 配置有误，请重新设置';
+    } else if (msg.includes('fetch') || msg.includes('Network') || msg.includes('Failed to fetch')) {
+      errorEl.textContent = '网络连接失败，请检查 Supabase URL 是否正确';
+    } else {
+      errorEl.textContent = msg || '注册失败，请重试';
+    }
+    errorEl.classList.remove('hidden');
+  } finally {
+    btn.textContent = '注册并登录';
+    btn.disabled = false;
+  }
+}
+
+// ── 退出 ──
+async function handleLogout() {
+  if (!supabaseClient) return;
+  try {
+    await supabaseClient.auth.signOut();
+  } catch (e) { /* ignore */ }
+  currentUser = null;
+  syncStatus = 'offline';
+  updateCloudUI();
+  closeAuthModal();
+  showToast('👋 已退出登录，使用本地模式');
+}
+
+// ── 从云端拉取数据 ──
+async function pullFromCloud() {
+  if (!supabaseClient || !currentUser) return;
+  setSyncStatus('syncing');
+  try {
+    // 分页拉取所有记录（Supabase 默认 limit 1000）
+    let allRows = [];
+    let from = 0;
+    const pageSize = 1000;
+    while (true) {
+      const { data, error } = await supabaseClient
+        .from('study_logs')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .range(from, from + pageSize - 1);
+      if (error) throw error;
+      if (!data || data.length === 0) break;
+      allRows = allRows.concat(data);
+      if (data.length < pageSize) break;
+      from += pageSize;
+    }
+
+    // 转换为本地格式
+    const cloudLogs = allRows.map(row => ({
+      id: row.id,
+      category: row.category,
+      content: row.content,
+      createdAt: new Date(row.created_at).getTime(),
+      timestamp: row.timestamp,
+    }));
+
+    // 智能合并：云端数据优先
+    const localMap = new Map(logs.map(l => [l.id, l]));
+    for (const cl of cloudLogs) {
+      localMap.set(cl.id, cl);
+    }
+    logs = Array.from(localMap.values()).sort((a, b) => b.createdAt - a.createdAt);
+    saveToStorageSilent();
+
+    setSyncStatus('connected');
+    renderAll();
+  } catch (e) {
+    console.warn('云端拉取失败:', e.message);
+    setSyncStatus('offline');
+  }
+}
+
+// ── 推送到云端 ──
+async function pushToCloud(log) {
+  if (!supabaseClient || !currentUser) return;
+  try {
+    const { error } = await supabaseClient.from('study_logs').upsert({
+      id: log.id,
+      user_id: currentUser.id,
+      category: log.category,
+      content: log.content,
+      created_at: new Date(log.createdAt).toISOString(),
+      timestamp: log.timestamp,
+    }, { onConflict: 'id' });
+    if (error) throw error;
+  } catch (e) {
+    console.warn('云端推送失败:', e.message);
+  }
+}
+
+// ── 从云端删除 ──
+async function deleteFromCloud(id) {
+  if (!supabaseClient || !currentUser) return;
+  try {
+    await supabaseClient.from('study_logs').delete().eq('id', id);
+  } catch (e) {
+    console.warn('云端删除失败:', e.message);
+  }
+}
+
+// ── 静默保存（不触发 SW 通知） ──
+function saveToStorageSilent() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(logs));
+}
+
+// ── 修改 saveToStorage，同步推云端 ──
+const originalSaveToStorage = saveToStorage;
+saveToStorage = function() {
+  originalSaveToStorage();
+};
+
+// ── 同步状态 UI ──
+function setSyncStatus(status) {
+  syncStatus = status;
+  updateCloudUI();
+}
+
+function updateCloudUI() {
+  const dot = document.getElementById('syncDot');
+  const label = document.getElementById('cloudLabel');
+  const logoutBtn = document.getElementById('logoutBtn');
+
+  if (!dot || !label) return;
+
+  // 清除所有 class
+  dot.className = 'sync-dot';
+  const config = getSupabaseConfig();
+
+  if (!config) {
+    dot.classList.add('offline');
+    label.textContent = '未配置';
+    return;
+  }
+
+  if (!currentUser) {
+    dot.classList.add('offline');
+    label.textContent = '未登录';
+    if (logoutBtn) logoutBtn.classList.add('hidden');
+    return;
+  }
+
+  // 已登录
+  dot.classList.add(syncStatus === 'syncing' ? 'syncing' : 'connected');
+  const shortEmail = currentUser.email.length > 18
+    ? currentUser.email.substring(0, 16) + '…'
+    : currentUser.email;
+  label.textContent = syncStatus === 'syncing' ? '同步中…' : shortEmail;
+
+  if (logoutBtn) {
+    logoutBtn.classList.remove('hidden');
+    document.getElementById('authFooter').classList.add('hidden');
+  }
+}
+
+// ── 云端按钮点击 ──
+function handleCloudClick() {
+  const config = getSupabaseConfig();
+  if (!config) {
+    openConfigModal();
+    return;
+  }
+  if (!supabaseClient) {
+    initSupabase();
+    if (!supabaseClient) { openConfigModal(); return; }
+  }
+  if (!currentUser) {
+    openAuthModal('login');
+    return;
+  }
+  // 已登录 → 手动同步
+  pullFromCloud().then(() => {
+    if (syncStatus === 'connected') showToast('🔄 同步完成');
+  });
+}
+
+// ── 配置弹窗 ──
+function openConfigModal() {
+  showModal('supabaseConfigModal', 'configBox');
+  const config = getSupabaseConfig();
+  if (config) {
+    document.getElementById('supabaseUrl').value = config.url || '';
+    document.getElementById('supabaseKey').value = config.key || '';
+  }
+}
+
+function closeConfigModal() {
+  hideModal('supabaseConfigModal', 'configBox');
+}
+
+function saveSupabaseConfig() {
+  let url = document.getElementById('supabaseUrl').value.trim();
+  const key = document.getElementById('supabaseKey').value.trim();
+  if (!url || !key) {
+    showToast('⚠️ 请填写完整信息');
+    return;
+  }
+  // 自动补全和清理 URL
+  if (!url.startsWith('http')) url = 'https://' + url;
+  url = url.replace(/\/+$/, ''); // 去掉末尾斜杠
+  url = url.replace(/\.co\/.*$/, '.co'); // 去掉 .co 之后的路径（如 /rest/v1）
+  if (!url.includes('supabase.co')) {
+    showToast('⚠️ URL 格式不对，应为 https://xxxxx.supabase.co');
+    return;
+  }
+  // 回写清理后的 URL
+  document.getElementById('supabaseUrl').value = url;
+  saveSupabaseConfigToStorage(url, key);
+  closeConfigModal();
+  // 重新初始化
+  initSupabase();
+  if (!supabaseClient) {
+    showToast('❌ 连接失败，请检查 URL 和 Key 是否正确');
+    return;
+  }
+  showToast('⚙️ 配置已保存');
+  // 提示登录
+  if (supabaseClient && !currentUser) {
+    setTimeout(() => openAuthModal('login'), 500);
+  }
+}
+
+// ── Auth 弹窗 ──
+function openAuthModal(mode) {
+  authMode = mode || 'login';
+  switchAuthTab(authMode);
+  showModal('authModal', 'authBox');
+  if (authMode === 'login') {
+    document.getElementById('loginEmail').focus();
+  } else {
+    document.getElementById('registerEmail').focus();
+  }
+  // 清除错误 & 输入
+  document.getElementById('loginError').classList.add('hidden');
+  document.getElementById('registerError').classList.add('hidden');
+  document.getElementById('loginPassword').value = '';
+  document.getElementById('registerPassword').value = '';
+}
+
+function closeAuthModal() {
+  hideModal('authModal', 'authBox');
+}
+
+function switchAuthTab(mode) {
+  authMode = mode;
+  const tabLogin = document.getElementById('authTabLogin');
+  const tabRegister = document.getElementById('authTabRegister');
+  const formLogin = document.getElementById('loginForm');
+  const formRegister = document.getElementById('registerForm');
+  const logoutBtn = document.getElementById('logoutBtn');
+  const footer = document.getElementById('authFooter');
+
+  if (mode === 'login') {
+    tabLogin.classList.add('active'); tabLogin.classList.remove('text-slate-350'); tabLogin.classList.add('text-slate-800');
+    tabRegister.classList.remove('active'); tabRegister.classList.add('text-slate-350'); tabRegister.classList.remove('text-slate-800');
+    formLogin.classList.remove('hidden');
+    formRegister.classList.add('hidden');
+    if (currentUser) {
+      logoutBtn.classList.remove('hidden');
+      footer.classList.add('hidden');
+    } else {
+      logoutBtn.classList.add('hidden');
+      footer.classList.remove('hidden');
+    }
+    document.getElementById('loginEmail').focus();
+  } else {
+    tabRegister.classList.add('active'); tabRegister.classList.remove('text-slate-350'); tabRegister.classList.add('text-slate-800');
+    tabLogin.classList.remove('active'); tabLogin.classList.add('text-slate-350'); tabLogin.classList.remove('text-slate-800');
+    formRegister.classList.remove('hidden');
+    formLogin.classList.add('hidden');
+    logoutBtn.classList.add('hidden');
+    footer.classList.remove('hidden');
+    document.getElementById('registerEmail').focus();
+  }
+}
+
+// ── 通用弹窗 helpers ──
+function showModal(modalId, boxId) {
+  const modal = document.getElementById(modalId);
+  const box = document.getElementById(boxId);
+  modal.classList.remove('pointer-events-none');
+  modal.classList.add('opacity-100');
+  box.classList.remove('scale-95');
+  box.classList.add('scale-100');
+}
+
+function hideModal(modalId, boxId) {
+  const modal = document.getElementById(modalId);
+  const box = document.getElementById(boxId);
+  modal.classList.remove('opacity-100');
+  modal.classList.add('pointer-events-none');
+  box.classList.add('scale-95');
+  box.classList.remove('scale-100');
+}
+
+// ── 增强 addLog：推送到云端 ──
+const _originalAddLog = addLog;
+addLog = function() {
+  _originalAddLog();
+  // 推送最新一条到云端
+  if (supabaseClient && currentUser && logs.length > 0) {
+    pushToCloud(logs[0]);
+  }
+};
+
+// ── 增强 confirmDelete：从云端删除 ──
+const _originalConfirmDelete = confirmDelete;
+confirmDelete = async function() {
+  const targetId = deleteTargetId;
+  _originalConfirmDelete();
+  if (targetId) {
+    await deleteFromCloud(targetId);
+  }
+};
+
+// ── 点击弹窗背景关闭 ──
+document.addEventListener('click', (e) => {
+  if (e.target.id === 'supabaseConfigModal') closeConfigModal();
+  if (e.target.id === 'authModal') closeAuthModal();
+});
+
+// ── 键盘：Enter 提交登录/注册 ──
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') {
+    const authM = document.getElementById('authModal');
+    const configM = document.getElementById('supabaseConfigModal');
+    if (authM && !authM.classList.contains('pointer-events-none')) {
+      if (authMode === 'login') handleLogin(); else handleRegister();
+    }
+    if (configM && !configM.classList.contains('pointer-events-none')) {
+      saveSupabaseConfig();
+    }
+  }
+});
+
+// ============================================================
+//  键盘快捷键
+// ============================================================
+function bindKeyboard() {
+  document.addEventListener('keydown', (e) => {
+    // Ctrl+Enter 提交
+    if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+      e.preventDefault();
+      addLog();
+    }
+    // Escape 关闭弹窗
+    if (e.key === 'Escape') {
+      closeModal();
+    }
+  });
+
+  // 输入框自动调整高度
+  const textarea = document.getElementById('logInput');
+  textarea.addEventListener('input', () => {
+    textarea.style.height = 'auto';
+    textarea.style.height = Math.min(textarea.scrollHeight, 200) + 'px';
+  });
+}
+
+// ============================================================
+//  启动
+// ============================================================
+init();
+
+// ============================================================
+//  PWA: Service Worker 注册（自包含，Blob 方式）
+// ============================================================
+let deferredPrompt = null;
+let swRegistration = null;
+
+(function registerSW() {
+  // Service Worker 仅可在 HTTPS 或 localhost 下注册
+  const isSecure = location.protocol === 'https:' ||
+                   location.hostname === 'localhost' ||
+                   location.hostname === '127.0.0.1' ||
+                   location.hostname.includes('.localhost');
+
+  if (!isSecure) {
+    // file:// 协议：仅展示离线功能受限提示，app 仍可正常使用
+    showIOSTipIfNeeded();
+    return;
+  }
+
+  const SW_CODE = `
+const CACHE_NAME = 'zzb-study-v2';
+const STATIC_ASSETS = [
+  self.location.href.split('?')[0].split('#')[0] // 缓存当前页面本身
+];
+
+// 安装：预缓存核心页面
+self.addEventListener('install', (event) => {
+  event.waitUntil(
+    caches.open(CACHE_NAME).then((cache) => {
+      return cache.addAll(STATIC_ASSETS).catch(() => {});
+    }).then(() => self.skipWaiting())
+  );
+});
+
+// 激活：清理旧缓存
+self.addEventListener('activate', (event) => {
+  event.waitUntil(
+    caches.keys().then((keys) => {
+      return Promise.all(
+        keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k))
+      );
+    }).then(() => self.clients.claim())
+  );
+});
+
+// 请求拦截：Cache-First → 网络回退
+self.addEventListener('fetch', (event) => {
+  // 跳过 chrome-extension 和非 GET 请求
+  if (event.request.method !== 'GET') return;
+  const url = new URL(event.request.url);
+  if (url.protocol === 'chrome-extension:') return;
+
+  event.respondWith(
+    caches.match(event.request).then((cached) => {
+      if (cached) return cached;
+      return fetch(event.request).then((response) => {
+        // 缓存成功的同源请求
+        if (response && response.status === 200 && url.origin === self.location.origin) {
+          const clone = response.clone();
+          caches.open(CACHE_NAME).then(cache => cache.put(event.request, clone));
+        }
+        return response;
+      }).catch(() => {
+        // 离线时的 fallback — 返回缓存的页面
+        if (event.request.mode === 'navigate') {
+          return caches.match(self.location.href.split('?')[0].split('#')[0]);
+        }
+        return new Response('Offline', { status: 503 });
+      });
+    })
+  );
+});
+
+// 接收主线程消息（数据变更通知）
+self.addEventListener('message', (event) => {
+  if (event.data && event.data.type === 'DATA_UPDATED') {
+    // 数据变更时通知所有客户端刷新缓存
+    self.clients.matchAll().then(clients => {
+      clients.forEach(client => {
+        client.postMessage({ type: 'REFRESH' });
+      });
+    });
+  }
+});
+`;
+
+  try {
+    const swBlob = new Blob([SW_CODE], { type: 'application/javascript' });
+    const swUrl = URL.createObjectURL(swBlob);
+
+    // Blob URL SW 注册：Chrome 新版本支持，旧版降级
+    navigator.serviceWorker.register(swUrl, { scope: '/' })
+      .then((reg) => {
+        swRegistration = reg;
+        console.log('✅ Service Worker 已注册，离线模式就绪');
+
+        // 监听 SW 更新
+        reg.addEventListener('updatefound', () => {
+          const newWorker = reg.installing;
+          if (newWorker) {
+            newWorker.addEventListener('statechange', () => {
+              if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                showToast('🔄 新版本已就绪，刷新后生效');
+              }
+            });
+          }
+        });
+      })
+      .catch((err) => {
+        // Blob URL 被浏览器拒绝（如旧版 Chrome），尝试降级为简单的 SW 注册
+        console.warn('Blob SW 注册失败，尝试 fallback:', err.message);
+        fallbackRegister();
+      });
+  } catch (e) {
+    console.warn('SW 创建失败:', e.message);
+    fallbackRegister();
+  }
+
+  function fallbackRegister() {
+    // 降级注册：尝试用页面自身 URL 注册 SW（需要服务端配合）
+    // 这里静默失败，app 功能不受影响
+    showIOSTipIfNeeded();
+  }
+})();
+
+// ============================================================
+//  PWA: 安装提示
+// ============================================================
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+  // 30 秒后显示安装横幅
+  setTimeout(() => {
+    if (deferredPrompt && !sessionStorage.getItem('pwa_banner_dismissed')) {
+      showPWAInstallBanner();
+    }
+  }, 3000);
+});
+
+// App 已安装后隐藏
+window.addEventListener('appinstalled', () => {
+  deferredPrompt = null;
+  document.getElementById('pwaInstallBanner').classList.add('hidden');
+  document.getElementById('iosInstallTip').classList.add('hidden');
+  showToast('🎉 已成功安装！');
+});
+
+function showPWAInstallBanner() {
+  const banner = document.getElementById('pwaInstallBanner');
+  banner.classList.remove('hidden');
+  banner.firstElementChild.classList.add('pwa-banner-enter');
+}
+
+function dismissPWABanner() {
+  document.getElementById('pwaInstallBanner').classList.add('hidden');
+  sessionStorage.setItem('pwa_banner_dismissed', '1');
+}
+
+function dismissIOSTip() {
+  document.getElementById('iosInstallTip').classList.add('hidden');
+  sessionStorage.setItem('ios_tip_dismissed', '1');
+}
+
+function showIOSTipIfNeeded() {
+  const isIOS = /iphone|ipad|ipod/.test(navigator.userAgent.toLowerCase());
+  const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
+  const isDismissed = sessionStorage.getItem('ios_tip_dismissed');
+  const isSafari = /safari/.test(navigator.userAgent.toLowerCase()) && !/chrome|crios/.test(navigator.userAgent.toLowerCase());
+
+  if (isIOS && isSafari && !isStandalone && !isDismissed) {
+    setTimeout(() => {
+      document.getElementById('iosInstallTip').classList.remove('hidden');
+      document.getElementById('iosInstallTip').firstElementChild.classList.add('pwa-banner-enter');
+    }, 3000);
+  }
+}
+
+// 安装按钮点击
+document.getElementById('pwaInstallBtn').addEventListener('click', async () => {
+  if (!deferredPrompt) return;
+  deferredPrompt.prompt();
+  const { outcome } = await deferredPrompt.userChoice;
+  deferredPrompt = null;
+  document.getElementById('pwaInstallBanner').classList.add('hidden');
+  if (outcome === 'accepted') {
+    showToast('🎉 安装成功！');
+  }
+});
+
+// 数据变更时通知 SW
+function notifySW() {
+  if (swRegistration && swRegistration.active) {
+    swRegistration.active.postMessage({ type: 'DATA_UPDATED' });
+  }
+}
+
+// 监听 SW 的刷新消息
+navigator.serviceWorker.addEventListener('message', (event) => {
+  if (event.data && event.data.type === 'REFRESH') {
+    renderAll();
+  }
+});
+</script>
+
+</body>
+</html>
