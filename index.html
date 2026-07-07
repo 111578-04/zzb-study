@@ -1200,7 +1200,9 @@ function handleCloudClick() {
         showToast('✅ 数据已是最新');
       }
     } else {
-      showToast('⚠️ 同步失败，请检查网络');
+      const errMsg = (result && result.error) ? result.error : '未知错误';
+      showToast('⚠️ 同步失败：' + errMsg);
+      console.error('同步失败详情:', errMsg);
     }
   });
 }
