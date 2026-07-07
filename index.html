@@ -1391,13 +1391,9 @@ async function pullFromCloud() {
       timestamp: row.timestamp,
     }));
 
-    // 智能合并：云端数据优先
-    const localMap = new Map(logs.map(l => [l.id, l]));
-    for (const cl of cloudLogs) {
-      localMap.set(cl.id, cl);
-    }
+    // 云端为权威数据源，直接替换本地（每次写入都会即时推送云端）
     const oldLength = logs.length;
-    logs = Array.from(localMap.values()).sort((a, b) => b.createdAt - a.createdAt);
+    logs = cloudLogs.sort((a, b) => b.createdAt - a.createdAt);
     saveToStorageSilent();
 
     setSyncStatus('connected');
